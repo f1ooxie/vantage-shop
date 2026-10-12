@@ -1,0 +1,210 @@
+[12.10.2026 23:00] .: <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Vantage Store</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{
+  --bg:#0a0a0c; --card:#121216; --line:rgba(255,255,255,.07); --line-strong:rgba(255,255,255,.16);
+  --text:#f4f4f6; --muted:#8b8b95; --accent:#ffffff;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:hidden;max-width:100%}
+body{-webkit-overflow-scrolling:touch;-webkit-font-smoothing:antialiased;
+  padding:env(safe-area-inset-top,0) 0 0}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+header{padding:28px 20px 8px;max-width:720px;margin:0 auto}
+.brand{font-family:var(--serif);font-size:32px;letter-spacing:.01em;font-weight:500}
+.sub{margin-top:6px;color:var(--muted);font-size:15px;line-height:1.5}
+
+main{max-width:720px;margin:0 auto;padding:20px 16px calc(120px + env(safe-area-inset-bottom,0));
+  display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:620px){main{grid-template-columns:1fr 1fr}}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;
+  display:flex;flex-direction:column;transition:border-color .2s}
+.card:hover{border-color:var(--line-strong)}
+.art{position:relative;aspect-ratio:4/3;display:grid;place-items:center;
+  background:radial-gradient(120% 90% at 50% 0%,#24242b 0%,#15151a 55%,#101013 100%)}
+.art svg{width:56%;max-width:210px;height:auto;filter:drop-shadow(0 18px 24px rgba(0,0,0,.55))}
+.tag{position:absolute;top:12px;left:12px;font-size:12px;padding:5px 10px;border-radius:99px;
+  background:rgba(255,255,255,.08);border:1px solid var(--line-strong);color:var(--text);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.info{padding:16px 16px 18px;display:flex;flex-direction:column;gap:14px}
+.row{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.name{font-family:var(--serif);font-size:20px;font-weight:500}
+.price{font-family:var(--serif);font-size:20px;font-variant-numeric:lining-nums}
+.note{color:var(--muted);font-size:14px;line-height:1.45;margin-top:-6px}
+
+.add{width:100%;min-height:46px;border-radius:14px;font-weight:600;font-size:15px;
+  background:linear-gradient(180deg,#ffffff,#d9d9de);color:#0a0a0c;transition:transform .12s,opacity .12s}
+.add:active{transform:scale(.97);opacity:.9}
+.stepper{display:flex;align-items:center;justify-content:space-between;min-height:46px;border-radius:14px;
+  border:1px solid var(--line-strong);padding:0 4px}
+.stepper button{width:44px;height:44px;border-radius:12px;font-size:22px;line-height:1;color:var(--text)}
+.stepper button:active{background:rgba(255,255,255,.08)}
+.stepper span{font-weight:600;font-variant-numeric:tabular-nums}
+
+.bar{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0));
+  max-width:696px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 14px 12px 18px;border-radius:18px;background:rgba(24,24,29,.82);
+  border:1px solid var(--line-strong);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  box-shadow:0 14px 40px rgba(0,0,0,.5);transform:translateY(160%);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.bar.show{transform:none}
+.bar .count{color:var(--muted);font-size:14px}
+.bar .total{font-family:var(--serif);font-size:22px;margin-top:2px;font-variant-numeric:lining-nums}
+.bar .go{display:none;min-height:44px;padding:0 20px;border-radius:12px;background:#fff;color:#0a0a0c;font-weight:600}
+.bar.preview .go{display:block}
+[12.10.2026 23:00] .: .toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top,0));transform:translate(-50%,-140%);
+  background:#fff;color:#0a0a0c;padding:10px 16px;border-radius:12px;font-size:14px;max-width:90%;
+  transition:transform .3s;z-index:10}
+.toast.show{transform:translate(-50%,0)}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1 class="brand">Vantage Store</h1>
+  <p class="sub">Everyday pieces, made to last. Pick what you like and check out in Telegram.</p>
+</header>
+
+<main id="shop" aria-label="Products"></main>
+
+<div class="bar" id="bar" role="status" aria-live="polite">
+  <div>
+    <div class="count" id="count">0 items</div>
+    <div class="total" id="total">$0</div>
+  </div>
+  <button class="go" id="go" type="button">Checkout</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  var tg = window.Telegram && window.Telegram.WebApp;
+  var inTelegram = !!(tg && tg.initData);
+
+  if (tg) {
+    try { tg.ready(); tg.expand(); } catch(e){}
+    try { tg.setHeaderColor('#0a0a0c'); tg.setBackgroundColor('#0a0a0c'); } catch(e){}
+    try { tg.MainButton.setParams({ color:'#ffffff', text_color:'#0a0a0c' }); } catch(e){}
+  }
+
+  var CURRENCY = '$';
+  var PRODUCTS = [
+    { id:'hoodie', name:'Minimal Hoodie', price:89,  tag:'Bestseller', note:'Heavyweight cotton, relaxed fit.' },
+    { id:'tote',   name:'Essential Tote', price:42,  tag:'New',        note:'Waxed canvas with a reinforced base.' },
+    { id:'watch',  name:'Chrono Watch',   price:240, tag:'Limited',    note:'Steel case, sapphire glass, leather strap.' }
+  ];
+
+  var ART = {
+    hoodie:'<svg viewBox="0 0 120 100" fill="none" aria-hidden="true"><defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a4a54"/><stop offset="1" stop-color="#26262c"/></linearGradient></defs><path d="M42 18Q60 6 78 18L104 34 96 58 84 52V90H36V52L24 58 16 34Z" fill="url(#g1)" stroke="rgba(255,255,255,.25)"/><path d="M46 20Q60 34 74 20" stroke="rgba(255,255,255,.35)"/><path d="M54 36V52M66 36V52" stroke="rgba(255,255,255,.4)" stroke-linecap="round"/><path d="M48 70H72" stroke="rgba(255,255,255,.15)"/></svg>',
+    tote:'<svg viewBox="0 0 120 100" fill="none" aria-hidden="true"><defs><linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#55555f"/><stop offset="1" stop-color="#2a2a31"/></linearGradient></defs><path d="M44 42C44 12 76 12 76 42" stroke="rgba(255,255,255,.5)" stroke-width="3" stroke-linecap="round"/><path d="M28 40H92L97 92H23Z" fill="url(#g2)" stroke="rgba(255,255,255,.25)"/><path d="M26 56H94" stroke="rgba(255,255,255,.12)"/><rect x="50" y="62" width="20" height="12" rx="2" stroke="rgba(255,255,255,.35)"/></svg>',
+    watch:'<svg viewBox="0 0 120 100" fill="none" aria-hidden="true"><defs><linearGradient id="g3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6a6a75"/><stop offset="1" stop-color="#2b2b32"/></linearGradient></defs><path d="M48 4H72L76 28H44Z M44 72H76L72 96H48Z" fill="#202026" stroke="rgba(255,255,255,.2)"/><circle cx="60" cy="50" r="28" fill="url(#g3)" stroke="rgba(255,255,255,.35)"/><circle cx="60" cy="50" r="22" fill="#0e0e11" stroke="rgba(255,255,255,.18)"/><path d="M60 32V36M60 64V68M42 50H46M74 50H78" stroke="rgba(255,255,255,.55)" stroke-linecap="round"/><path d="M60 50V38M60 50L69 55" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="60" cy="50" r="2" fill="#fff"/><rect x="88" y="46" width="5" height="8" rx="1" fill="#3a3a42"/></svg>'
+  };
+
+  var cart = {};
+  var shop = document.getElementById('shop');
+  var bar = document.getElementById('bar');
+  var elCount = document.getElementById('count');
+  var elTotal = document.getElementById('total');
+  var goBtn = document.getElementById('go');
+  var toast = document.getElementById('toast');
+
+  function money(n){ return CURRENCY + (Math.round(n * 100) / 100).toLocaleString('en-US'); }
+[12.10.2026 23:00] .: function actionsHTML(p){
+    var q = cart[p.id] || 0;
+    if (!q) return '<button class="add" type="button" data-act="add" data-id="'+p.id+'">Add to Bag</button>';
+    return '<div class="stepper"><button type="button" data-act="dec" data-id="'+p.id+'" aria-label="Remove one '+p.name+'">&minus;</button>'
+         + '<span aria-live="polite">'+q+' in bag</span>'
+         + '<button type="button" data-act="inc" data-id="'+p.id+'" aria-label="Add one more '+p.name+'">+</button></div>';
+  }
+
+  PRODUCTS.forEach(function(p){
+    var el = document.createElement('article');
+    el.className = 'card';
+    el.innerHTML =
+      '<div class="art">'+ART[p.id]+'<span class="tag">'+p.tag+'</span></div>'+
+      '<div class="info"><div class="row"><h2 class="name">'+p.name+'</h2><span class="price">'+money(p.price)+'</span></div>'+
+      '<p class="note">'+p.note+'</p><div class="actions" id="act-'+p.id+'">'+actionsHTML(p)+'</div></div>';
+    shop.appendChild(el);
+  });
+
+  function totals(){
+    var items = 0, sum = 0;
+    PRODUCTS.forEach(function(p){ var q = cart[p.id] || 0; items += q; sum += q * p.price; });
+    return { items: items, sum: sum };
+  }
+
+  function sync(id){
+    var p = PRODUCTS.filter(function(x){ return x.id === id; })[0];
+    document.getElementById('act-'+id).innerHTML = actionsHTML(p);
+
+    var t = totals();
+    elCount.textContent = t.items + (t.items === 1 ? ' item' : ' items');
+    elTotal.textContent = money(t.sum);
+    bar.classList.toggle('show', t.items > 0);
+    bar.classList.toggle('preview', !inTelegram);
+
+    if (tg && tg.MainButton) {
+      try {
+        if (t.items > 0) { tg.MainButton.setText('Checkout (' + money(t.sum) + ')'); tg.MainButton.show(); tg.MainButton.enable(); }
+        else { tg.MainButton.hide(); }
+      } catch(e){}
+    }
+  }
+
+  function buzz(){ try { tg.HapticFeedback.impactOccurred('light'); } catch(e){} }
+
+  shop.addEventListener('click', function(e){
+    var b = e.target.closest('button[data-act]');
+    if (!b) return;
+    var id = b.getAttribute('data-id'), act = b.getAttribute('data-act');
+    var q = cart[id] || 0;
+    if (act === 'add' || act === 'inc') q += 1;
+    if (act === 'dec') q = Math.max(0, q - 1);
+    if (q) cart[id] = q; else delete cart[id];
+    buzz();
+    sync(id);
+  });
+
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(function(){ toast.classList.remove('show'); }, 2600);
+  }
+
+  function checkout(){
+    var t = totals();
+    if (!t.items) return;
+    var payload = {
+      store: 'Vantage Store',
+      currency: 'USD',
+      items: PRODUCTS.filter(function(p){ return cart[p.id]; }).map(function(p){
+        return { id: p.id, name: p.name, qty: cart[p.id], price: p.price };
+      }),
+      total: t.sum
+    };
+    if (inTelegram) {
+      tg.sendData(JSON.stringify(payload));
+    } else {
+      console.log('Order payload:', payload);
+      showToast('Preview mode: checkout sends the order inside Telegram.');
+    }
+  }
+
+  goBtn.addEventListener('click', checkout);
+  if (tg && tg.MainButton) { try { tg.MainButton.onClick(checkout); } catch(e){} }
+})();
+</script>
+</body>
+</html>
