@@ -62,7 +62,8 @@ main{max-width:720px;margin:0 auto;padding:20px 16px calc(120px + env(safe-area-
 .bar .total{font-family:var(--serif);font-size:22px;margin-top:2px;font-variant-numeric:lining-nums}
 .bar .go{display:none;min-height:44px;padding:0 20px;border-radius:12px;background:#fff;color:#0a0a0c;font-weight:600}
 .bar.preview .go{display:block}
-[12.10.2026 23:00] .: .toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top,0));transform:translate(-50%,-140%);
+
+.toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top,0));transform:translate(-50%,-140%);
   background:#fff;color:#0a0a0c;padding:10px 16px;border-radius:12px;font-size:14px;max-width:90%;
   transition:transform .3s;z-index:10}
 .toast.show{transform:translate(-50%,0)}
@@ -121,7 +122,8 @@ main{max-width:720px;margin:0 auto;padding:20px 16px calc(120px + env(safe-area-
   var toast = document.getElementById('toast');
 
   function money(n){ return CURRENCY + (Math.round(n * 100) / 100).toLocaleString('en-US'); }
-[12.10.2026 23:00] .: function actionsHTML(p){
+
+  function actionsHTML(p){
     var q = cart[p.id] || 0;
     if (!q) return '<button class="add" type="button" data-act="add" data-id="'+p.id+'">Add to Bag</button>';
     return '<div class="stepper"><button type="button" data-act="dec" data-id="'+p.id+'" aria-label="Remove one '+p.name+'">&minus;</button>'
