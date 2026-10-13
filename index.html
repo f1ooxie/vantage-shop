@@ -7,18 +7,29 @@
   
   <!-- Telegram Web App JS SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <!-- Google Fonts: Inter & Playfair Display (Luxury Serif) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
 
   <style>
+    /* -----------------------------------------------------------
+       1. VARIABLES & RESET (New Creamy Brown Palette)
+    ----------------------------------------------------------- */
     :root {
-      --bg-dark: #0a0a0c;
-      --glass-bg: rgba(255, 255, 255, 0.03);
-      --glass-border: rgba(255, 255, 255, 0.08);
-      --glass-highlight: rgba(255, 255, 255, 0.15);
-      --card-bg: rgba(25, 22, 18, 0.65);
-      --accent: #ffffff;
-      --accent-muted: #8e8e93;
+      /* Creamy Brown Base */
+      --bg-cream: #EADBC8; /* Soft warm background */
+      
+      /* Brighter Glass Panels */
+      --glass-bg: rgba(255, 255, 255, 0.3); /* Base brightness up from 0.03 */
+      --glass-border: rgba(255, 255, 255, 0.2); /* Clearer edges */
+      --glass-highlight: rgba(255, 255, 255, 0.4); /* Brighter pulse/hover */
+      
+      /* Brighter Card Backgrounds */
+      --card-bg: rgba(255, 255, 255, 0.15); /* Brightened up */
+      
+      /* Typography Colors */
+      --text-dark: #3F2305; /* Deep luxury brown for readability */
+      --text-muted: #8E7151; /* Lighter mocha tone */
+      --text-white: #ffffff; /* Use sparingly */
     }
 
     * {
@@ -26,198 +37,377 @@
       margin: 0;
       padding: 0;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      -webkit-tap-highlight-color: transparent;
+      -webkit-tap-highlight-color: transparent; /* Remove mobile tap highlight */
     }
 
+    /* -----------------------------------------------------------
+       2. LAYOUT & BACKGROUND
+    ----------------------------------------------------------- */
     body {
-      background-color: var(--bg-dark);
-      color: #fff;
+      background-color: var(--bg-cream);
+      /* Subtle radiant pattern to enhance the creamy look */
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.2) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.15) 0%, transparent 40%);
+      color: var(--text-dark);
       padding: 16px;
-      padding-bottom: 100px;
+      padding-bottom: 110px; /* Room for fixed footer */
       min-height: 100vh;
+      overflow-x: hidden; /* Prevent horizontal scroll from animation */
     }
 
-    /* Header */
+    /* -----------------------------------------------------------
+       3. KEYFRAMES & GLOBAL ANIMATIONS
+    ----------------------------------------------------------- */
+    @keyframes slideUpFadeIn {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes cartPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); background-color: var(--glass-highlight); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes tapScale {
+      0% { transform: scale(1); }
+      100% { transform: scale(0.96); }
+    }
+
+    /* Add to cart confirmation effect */
+    .added-to-cart {
+      animation: cartPulse 0.4s ease-out;
+    }
+
+    /* -----------------------------------------------------------
+       4. HEADER (Animated Entry)
+    ----------------------------------------------------------- */
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px;
+      padding: 18px 20px;
       margin-bottom: 24px;
       background: var(--glass-bg);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--glass-border);
       border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03); /* Subtle shadow for lift */
+      
+      /* Animation */
+      animation: slideUpFadeIn 0.5s ease-out;
     }
 
     .brand-title {
-      font-size: 1.1rem;
+      font-family: 'Playfair Display', serif; /* Elegant title */
+      font-size: 1.3rem;
       font-weight: 700;
-      letter-spacing: 3px;
+      letter-spacing: 2px;
       text-transform: uppercase;
+      color: var(--text-dark);
     }
 
     .cart-badge-btn {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid var(--glass-highlight);
-      color: #fff;
-      padding: 8px 16px;
+      position: relative;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid var(--glass-border);
+      color: var(--text-dark);
+      padding: 9px 18px;
       border-radius: 30px;
       font-weight: 600;
       font-size: 0.85rem;
       cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    /* Product Grid */
+    .cart-badge-btn:active {
+      animation: tapScale 0.1s ease forwards;
+    }
+
+    /* -----------------------------------------------------------
+       5. PRODUCT GRID & CARDS (Smooth Loading)
+    ----------------------------------------------------------- */
     .catalog {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
+      gap: 16px;
+      
+      /* Delay grid appearance slightly for better flow */
+      animation: slideUpFadeIn 0.6s ease-out 0.1s both;
     }
 
     .product-card {
       background: var(--card-bg);
       border: 1px solid var(--glass-border);
       border-radius: 18px;
-      padding: 12px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+      
+      /* Optimize for animations */
       will-change: transform;
-      transform: translateZ(0);
+      transform: translateZ(0); 
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .product-card:hover {
+      border-color: var(--glass-highlight);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.05);
     }
 
     .product-img {
       width: 100%;
       aspect-ratio: 1 / 1;
       object-fit: cover;
-      border-radius: 12px;
-      margin-bottom: 12px;
-      background: rgba(255, 255, 255, 0.02);
+      border-radius: 14px;
+      margin-bottom: 14px;
+      background: rgba(255, 255, 255, 0.1); /* Brighter loader */
     }
 
     .product-title {
       font-size: 0.9rem;
       font-weight: 600;
-      margin-bottom: 4px;
-      color: #f0f0f0;
+      margin-bottom: 5px;
+      color: var(--text-dark);
+      line-height: 1.2;
     }
 
     .product-price {
       font-size: 0.85rem;
-      color: var(--accent-muted);
-      margin-bottom: 12px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      font-weight: 500;
     }
 
+    /* Add Button (Animated Tap) */
     .add-btn {
       width: 100%;
-      padding: 10px;
-      background: rgba(255, 255, 255, 0.08);
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.4); /* Much brighter glass button */
       border: 1px solid var(--glass-border);
-      color: #fff;
-      border-radius: 12px;
+      color: var(--text-dark);
+      border-radius: 14px;
       font-weight: 600;
       font-size: 0.8rem;
       cursor: pointer;
+      backdrop-filter: blur(5px);
+      transition: background 0.2s, color 0.2s;
     }
 
     .add-btn:active {
-      background: rgba(255, 255, 255, 0.2);
+      animation: tapScale 0.1s ease forwards;
+      background: var(--glass-highlight);
     }
 
-    /* Sticky Bottom Checkout Bar */
+    /* -----------------------------------------------------------
+       6. STICKY BOTTOM BAR (Always Present)
+    ----------------------------------------------------------- */
     .checkout-bar {
       position: fixed;
       bottom: 16px;
       left: 16px;
       right: 16px;
-      background: rgba(15, 15, 20, 0.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--glass-highlight);
+      background: rgba(255, 255, 255, 0.4); /* High brightness glass footer */
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid var(--glass-border);
       border-radius: 24px;
-      padding: 14px 20px;
+      padding: 16px 22px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
       z-index: 100;
+      will-change: transform;
+      transform: translateZ(0);
+      
+      /* Entry Animation */
+      animation: slideUpFadeIn 0.5s ease-out 0.2s both;
     }
 
+    .total-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .total-value {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      transition: color 0.3s;
+    }
+
+    /* Total pulses white when updated */
+    .total-updated {
+        color: var(--bg-cream);
+        animation: cartPulse 0.3s;
+    }
+
+    /* Checkout Button (Animated) */
     .checkout-btn {
-      background: var(--accent);
-      color: #000;
+      background: var(--text-dark); /* Contrast color for CTA */
+      color: var(--bg-cream); /* Creamy text on dark button */
       border: none;
-      padding: 10px 22px;
+      padding: 12px 26px;
       border-radius: 16px;
       font-weight: 700;
       font-size: 0.9rem;
       cursor: pointer;
+      transition: transform 0.1s ease, background-color 0.2s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
     .checkout-btn:active {
-      transform: scale(0.96);
+      animation: tapScale 0.1s ease forwards;
+      opacity: 0.9;
     }
 
-    /* Cart Modal Drawer */
+    /* -----------------------------------------------------------
+       7. CART MODAL (Slide Up Drawer Animation)
+    ----------------------------------------------------------- */
     .cart-modal {
-      display: none;
+      display: none; /* Controlled by JS */
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.3); /* Transparent overlay */
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
       z-index: 200;
       padding: 20px;
       flex-direction: column;
-      justify-content: flex-end;
+      justify-content: flex-end; /* Drawer at bottom */
+      
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .cart-modal.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    /* Animation definition for cart sliding up */
+    @keyframes slideInUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
     }
 
     .cart-content {
-      background: rgba(20, 20, 25, 0.95);
-      border: 1px solid var(--glass-highlight);
-      border-radius: 28px;
-      padding: 24px;
+      background: rgba(255, 255, 255, 0.7); /* Creamy glass drawer */
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 1px solid var(--glass-border);
+      border-radius: 30px 30px 24px 24px; /* Distinct top corners */
+      padding: 28px;
       max-height: 80vh;
       overflow-y: auto;
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.08);
+      
+      transform: translateY(100%); /* Start hidden */
+      transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); /* Smooth snap */
+    }
+
+    .cart-modal.show .cart-content {
+      transform: translateY(0); /* Slide up when shown */
     }
 
     .cart-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
+    }
+    
+    .cart-header h3 {
+        font-family: 'Playfair Display', serif;
+        color: var(--text-dark);
+        font-size: 1.2rem;
     }
 
     .close-btn {
-      background: none;
-      border: none;
-      color: var(--accent-muted);
+      background: rgba(255, 255, 255, 0.3);
+      border: 1px solid var(--glass-border);
+      color: var(--text-dark);
       font-size: 1.4rem;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
       cursor: pointer;
+      line-height: 1;
     }
 
+    /* Cart Items & Quantity Controls */
     .cart-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--glass-border);
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05); /* Soft divider */
+      animation: slideUpFadeIn 0.3s ease-out; /* Items fade in */
+    }
+
+    .cart-item-title {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--text-dark);
+    }
+    
+    .cart-item-price {
+        font-size: 0.8rem;
+        color: var(--text-muted);
     }
 
     .qty-controls {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      background: rgba(255,255,255,0.4); /* Bright controls */
+      padding: 5px 8px;
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+    }
+
+    .qty-count {
+        font-weight: 700;
+        color: var(--text-dark);
+        font-size: 0.9rem;
+        min-width: 15px;
+        text-align: center;
     }
 
     .qty-btn {
-      background: rgba(255,255,255,0.1);
+      background: rgba(0, 0, 0, 0.05);
       border: none;
-      color: #fff;
-      width: 26px;
-      height: 26px;
-      border-radius: 8px;
+      color: var(--text-dark);
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
       font-size: 1rem;
       cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background-color 0.2s;
+    }
+    
+    .qty-btn:active {
+        background-color: rgba(0,0,0,0.1);
     }
   </style>
 </head>
@@ -226,8 +416,8 @@
   <!-- Header -->
   <header>
     <div class="brand-title">VANTAGE</div>
-    <button class="cart-badge-btn" onclick="toggleCart()">
-      Cart (<span id="cart-count">0</span>)
+    <button class="cart-badge-btn" onclick="toggleCart()" id="main-cart-btn">
+      🛍️ <span id="cart-count">0</span>
     </button>
   </header>
 
@@ -237,28 +427,29 @@
   <!-- Sticky Bottom Bar -->
   <div class="checkout-bar">
     <div>
-      <div style="font-size: 0.75rem; color: var(--accent-muted);">TOTAL</div>
-      <div style="font-size: 1.1rem; font-weight: 700;" id="total-price">$0</div>
+      <div class="total-title">TOTAL</div>
+      <div class="total-value" id="total-price">$0</div>
     </div>
     <button class="checkout-btn" onclick="submitOrder()">Checkout</button>
   </div>
 
-  <!-- Cart Modal -->
-  <div class="cart-modal" id="cart-modal">
-    <div class="cart-content">
+  <!-- Cart Modal Drawer -->
+  <div class="cart-modal" id="cart-modal" onclick="closeCart(event)">
+    <div class="cart-content" onclick="event.stopPropagation()"> <!-- Prevent closing on inner click -->
       <div class="cart-header">
-        <h3>Your Cart</h3>
+        <h3>Your Selection</h3>
         <button class="close-btn" onclick="toggleCart()">&times;</button>
       </div>
       <div id="cart-items-list"></div>
     </div>
   </div>
 
-  <!-- Logic Script -->
+  <!-- Interaction Logic Script -->
   <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
+    // The identical product catalog data
     const products = [
       { id: 1, name: "Heavyweight Hoodie", price: 120, img: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=400" },
       { id: 2, name: "Oversized Tee", price: 65, img: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400" },
@@ -277,14 +468,15 @@
             <div class="product-title">${p.name}</div>
             <div class="product-price">$${p.price}</div>
           </div>
-          <button class="add-btn" onclick="addToCart(${p.id})">+ Add</button>
+          <button class="add-btn" onclick="addToCart(this, ${p.id})">+ Add</button>
         </div>
       `).join('');
     }
 
-    function addToCart(id) {
+    // Pass the button element to trigger animations
+    function addToCart(btnElement, id) {
       cart[id] = (cart[id] || 0) + 1;
-      updateCartUI();
+      updateCartUI(true); // pass true to trigger pulse animation on cart icon
     }
 
     function updateQuantity(id, delta) {
@@ -294,7 +486,14 @@
       updateCartUI();
     }
 
-    function updateCartUI() {
+    // Trigger pulse on total text
+    function animateTotalUpdate() {
+        const totalEl = document.getElementById('total-price');
+        totalEl.classList.add('total-updated');
+        setTimeout(() => totalEl.classList.remove('total-updated'), 300);
+    }
+
+    function updateCartUI(isAdd = false) {
       let count = 0;
       let total = 0;
       const itemsList = document.getElementById('cart-items-list');
@@ -306,28 +505,60 @@
         count += qty;
         total += product.price * qty;
 
+        // Render individual cart items inside the drawer
         itemsList.innerHTML += `
           <div class="cart-item">
             <div>
-              <div style="font-weight: 600; font-size: 0.9rem;">${product.name}</div>
-              <div style="font-size: 0.8rem; color: var(--accent-muted);">$${product.price} each</div>
+              <div class="cart-item-title">${product.name}</div>
+              <div class="cart-item-price">$${product.price} each</div>
             </div>
             <div class="qty-controls">
               <button class="qty-btn" onclick="updateQuantity(${id}, -1)">-</button>
-              <span>${qty}</span>
+              <span class="qty-count">${qty}</span>
               <button class="qty-btn" onclick="updateQuantity(${id}, 1)">+</button>
             </div>
           </div>
         `;
       });
 
+      // Update badge, total, and modal visibility logic
       document.getElementById('cart-count').innerText = count;
       document.getElementById('total-price').innerText = `$${total}`;
+      
+      // Animations
+      animateTotalUpdate();
+      
+      // Pulse top cart icon when adding
+      if (isAdd) {
+          const mainCartBtn = document.getElementById('main-cart-btn');
+          mainCartBtn.classList.add('added-to-cart');
+          setTimeout(() => mainCartBtn.classList.remove('added-to-cart'), 400);
+      }
     }
 
+    // Toggle Cart open/close with proper modal overlay behavior
     function toggleCart() {
       const modal = document.getElementById('cart-modal');
-      modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+      
+      if (modal.classList.contains('show')) {
+          // Hide it smoothly
+          modal.classList.remove('show');
+          // Important: wait for animation before setting display:none
+          setTimeout(() => modal.style.display = 'none', 400); 
+      } else {
+          // Show it smoothly
+          modal.style.display = 'flex';
+          // Important: use setTimeout(0) to trigger animation after display set to flex
+          setTimeout(() => modal.classList.add('show'), 10);
+      }
+    }
+
+    // Function to close cart specifically if tapping outside drawer
+    function closeCart(event) {
+        // Only close if tapping the overlay area (.cart-modal)
+        if (event.target === document.getElementById('cart-modal')) {
+            toggleCart();
+        }
     }
 
     function submitOrder() {
@@ -346,6 +577,7 @@
         total: Object.keys(cart).reduce((sum, id) => sum + (products.find(p => p.id == id).price * cart[id]), 0)
       };
 
+      // Send the standardized JSON string to your Python backend
       tg.sendData(JSON.stringify(orderData));
     }
 
