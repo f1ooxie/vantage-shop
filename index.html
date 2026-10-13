@@ -4,25 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Vantage Store</title>
+  
+  <!-- Telegram Web App JS SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet" />
 
   <style>
     :root {
-      --bg-top: #dcc7ac;
-      --bg-bottom: #b48f6c;
-      --text-main: #2a1b10;
-      --text-soft: #6b5442;
-      --glass-bg: linear-gradient(135deg, rgba(255, 250, 240, 0.55), rgba(255, 244, 228, 0.22));
-      --glass-border: rgba(255, 255, 255, 0.6);
-      --glass-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.85),
-        inset 0 -1px 0 rgba(255, 255, 255, 0.2),
-        0 10px 30px rgba(70, 40, 15, 0.25);
-      --dark-btn: #2a1b10;
-      --cream: #fff6e8;
-      --ease: cubic-bezier(0.22, 0.9, 0.3, 1);
-      --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --bg-dark: #0a0a0c;
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-highlight: rgba(255, 255, 255, 0.15);
+      --card-bg: rgba(25, 22, 18, 0.65);
+      --accent: #ffffff;
+      --accent-muted: #8e8e93;
     }
 
     * {
@@ -34,34 +30,11 @@
     }
 
     body {
-      background: linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
-      color: var(--text-main);
+      background-color: var(--bg-dark);
+      color: #fff;
       padding: 16px;
-      padding-bottom: 110px;
+      padding-bottom: 100px;
       min-height: 100vh;
-    }
-
-    /* Soft light blobs behind the glass, drifting slowly */
-    body::before, body::after {
-      content: "";
-      position: fixed;
-      z-index: -1;
-      width: 460px;
-      height: 460px;
-      border-radius: 50%;
-      pointer-events: none;
-    }
-    body::before { background: radial-gradient(circle, rgba(255, 241, 214, 0.95) 0%, rgba(255, 241, 214, 0) 70%); top: -180px; left: -200px; }
-    body::after  { background: radial-gradient(circle, rgba(138, 90, 53, 0.6) 0%, rgba(138, 90, 53, 0) 70%); bottom: -80px; right: -220px; }
-
-    .glass {
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      box-shadow: var(--glass-shadow);
-    }
-    .checkout-bar.glass, .cart-content.glass {
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
     }
 
     /* Header */
@@ -71,13 +44,11 @@
       align-items: center;
       padding: 16px;
       margin-bottom: 24px;
-      border-radius: 22px;
-      animation: dropIn 0.7s var(--ease) both;
-    }
-
-    @keyframes dropIn {
-      from { opacity: 0; transform: translateY(-24px); }
-      to   { opacity: 1; transform: translateY(0); }
+      background: var(--glass-bg);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
     }
 
     .brand-title {
@@ -88,26 +59,17 @@
     }
 
     .cart-badge-btn {
-      background: rgba(255, 255, 255, 0.45);
-      border: 1px solid rgba(255, 255, 255, 0.7);
-      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--glass-highlight);
+      color: #fff;
       padding: 8px 16px;
       border-radius: 30px;
       font-weight: 600;
       font-size: 0.85rem;
       cursor: pointer;
-      transition: transform 0.25s var(--spring), background 0.2s;
-    }
-    .cart-badge-btn:active { transform: scale(0.92); }
-    .cart-badge-btn.bump { animation: bump 0.45s var(--spring); }
-
-    @keyframes bump {
-      0% { transform: scale(1); }
-      40% { transform: scale(1.18); }
-      100% { transform: scale(1); }
     }
 
-    /* Catalog */
+    /* Product Grid */
     .catalog {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -115,159 +77,108 @@
     }
 
     .product-card {
-      border-radius: 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 18px;
       padding: 12px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      opacity: 0;
-      animation: riseIn 0.65s var(--ease) forwards;
-      animation-delay: calc(var(--i) * 70ms + 200ms);
-      transition: transform 0.35s var(--ease);
-    }
-    .product-card:active { transform: scale(0.97); }
-
-    @keyframes riseIn {
-      from { opacity: 0; transform: translateY(28px) scale(0.96); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    .img-wrap {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      border-radius: 14px;
-      margin-bottom: 12px;
-      background: linear-gradient(135deg, rgba(255,255,255,0.55), rgba(255,255,255,0.15));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.6rem;
-      overflow: hidden;
-      position: relative;
+      will-change: transform;
+      transform: translateZ(0);
     }
 
     .product-img {
-      position: absolute;
-      inset: 0;
       width: 100%;
-      height: 100%;
+      aspect-ratio: 1 / 1;
       object-fit: cover;
-      opacity: 0;
-      transform: scale(1.08);
-      transition: opacity 0.6s var(--ease), transform 0.9s var(--ease);
-    }
-    .img-wrap svg { width: 62%; height: 62%; }
-
-    .tag {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      font-size: 0.62rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      background: var(--dark-btn);
-      color: var(--cream);
-      padding: 3px 8px;
-      border-radius: 20px;
-      z-index: 2;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      background: rgba(255, 255, 255, 0.02);
     }
 
     .product-title {
       font-size: 0.9rem;
       font-weight: 600;
       margin-bottom: 4px;
+      color: #f0f0f0;
     }
 
     .product-price {
       font-size: 0.85rem;
-      color: var(--text-soft);
+      color: var(--accent-muted);
       margin-bottom: 12px;
     }
 
     .add-btn {
       width: 100%;
       padding: 10px;
-      background: rgba(255, 255, 255, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.75);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
-      color: var(--text-main);
-      border-radius: 13px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--glass-border);
+      color: #fff;
+      border-radius: 12px;
       font-weight: 600;
       font-size: 0.8rem;
       cursor: pointer;
-      transition: transform 0.25s var(--spring), background 0.3s, color 0.3s;
     }
-    .add-btn:active { transform: scale(0.94); }
-    .add-btn.added { background: var(--dark-btn); color: var(--cream); }
 
-    /* Checkout bar */
+    .add-btn:active {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Sticky Bottom Checkout Bar */
     .checkout-bar {
       position: fixed;
       bottom: 16px;
       left: 16px;
       right: 16px;
-      border-radius: 26px;
+      background: rgba(15, 15, 20, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-highlight);
+      border-radius: 24px;
       padding: 14px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       z-index: 100;
-      animation: barIn 0.8s var(--ease) 0.5s both;
     }
-
-    @keyframes barIn {
-      from { opacity: 0; transform: translateY(60px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    #total-price { display: inline-block; transition: transform 0.3s var(--spring); }
-    #total-price.pop { transform: scale(1.18); }
 
     .checkout-btn {
-      background: var(--dark-btn);
-      color: var(--cream);
+      background: var(--accent);
+      color: #000;
       border: none;
       padding: 10px 22px;
       border-radius: 16px;
       font-weight: 700;
       font-size: 0.9rem;
       cursor: pointer;
-      transition: transform 0.25s var(--spring);
     }
-    .checkout-btn:active { transform: scale(0.94); }
 
-    /* Cart drawer */
+    .checkout-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* Cart Modal Drawer */
     .cart-modal {
-      display: flex;
+      display: none;
       position: fixed;
-      inset: 0;
-      background: rgba(60, 38, 22, 0.5);
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
       z-index: 200;
       padding: 20px;
       flex-direction: column;
       justify-content: flex-end;
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      transition: opacity 0.4s var(--ease), visibility 0s linear 0.4s;
-    }
-    .cart-modal.open {
-      opacity: 1;
-      visibility: visible;
-      pointer-events: auto;
-      transition: opacity 0.4s var(--ease), visibility 0s;
     }
 
     .cart-content {
-      border-radius: 30px;
+      background: rgba(20, 20, 25, 0.95);
+      border: 1px solid var(--glass-highlight);
+      border-radius: 28px;
       padding: 24px;
       max-height: 80vh;
       overflow-y: auto;
-      transform: translateY(110%);
-      transition: transform 0.55s var(--ease);
     }
-    .cart-modal.open .cart-content { transform: translateY(0); }
 
     .cart-header {
       display: flex;
@@ -279,69 +190,62 @@
     .close-btn {
       background: none;
       border: none;
-      color: var(--text-soft);
+      color: var(--accent-muted);
       font-size: 1.4rem;
       cursor: pointer;
-      transition: transform 0.3s var(--spring);
     }
-    .close-btn:active { transform: rotate(90deg) scale(0.9); }
 
     .cart-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 12px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+      border-bottom: 1px solid var(--glass-border);
     }
 
-    .qty-controls { display: flex; align-items: center; gap: 10px; }
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
     .qty-btn {
-      background: rgba(255, 255, 255, 0.55);
-      border: 1px solid rgba(255, 255, 255, 0.75);
-      color: var(--text-main);
-      width: 28px;
-      height: 28px;
-      border-radius: 9px;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: #fff;
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
       font-size: 1rem;
       cursor: pointer;
-      transition: transform 0.2s var(--spring);
-    }
-    .qty-btn:active { transform: scale(0.85); }
-
-    .empty-cart {
-      text-align: center;
-      color: var(--text-soft);
-      font-size: 0.9rem;
-      padding: 20px 0;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; transition-duration: 0.01ms !important; }
     }
   </style>
 </head>
 <body>
 
-  <header class="glass">
+  <!-- Header -->
+  <header>
     <div class="brand-title">VANTAGE</div>
-    <button class="cart-badge-btn" id="cart-btn" onclick="toggleCart()">
+    <button class="cart-badge-btn" onclick="toggleCart()">
       Cart (<span id="cart-count">0</span>)
     </button>
   </header>
 
+  <!-- Product Catalog -->
   <main class="catalog" id="catalog"></main>
 
-  <div class="checkout-bar glass">
+  <!-- Sticky Bottom Bar -->
+  <div class="checkout-bar">
     <div>
-      <div style="font-size: 0.75rem; color: var(--text-soft);">TOTAL</div>
+      <div style="font-size: 0.75rem; color: var(--accent-muted);">TOTAL</div>
       <div style="font-size: 1.1rem; font-weight: 700;" id="total-price">$0</div>
     </div>
     <button class="checkout-btn" onclick="submitOrder()">Checkout</button>
   </div>
 
-  <div class="cart-modal" id="cart-modal" onclick="if (event.target === this) toggleCart()">
-    <div class="cart-content glass">
+  <!-- Cart Modal -->
+  <div class="cart-modal" id="cart-modal">
+    <div class="cart-content">
       <div class="cart-header">
         <h3>Your Cart</h3>
         <button class="close-btn" onclick="toggleCart()">&times;</button>
@@ -350,102 +254,47 @@
     </div>
   </div>
 
+  <!-- Logic Script -->
   <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Sample catalog (blueprint items). Emoji shows while a photo loads or if there is no photo.
     const products = [
-      { id: 1, name: "Heavyweight Hoodie", price: 120, emoji: "🧥", tag: "New", img: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=400" },
-      { id: 2, name: "Oversized Tee", price: 65, emoji: "👕", img: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400" },
-      { id: 3, name: "Tactical Cargo Pants", price: 140, emoji: "👖", img: "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400" },
-      { id: 4, name: "Obsidian Cap", price: 45, emoji: "🧢", img: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400" },
-      { id: 5, name: "Essential Tote", price: 38, emoji: "👜", tag: "Best seller" },
-      { id: 6, name: "Chrono Watch", price: 210, emoji: "⌚", tag: "Limited" },
-      { id: 7, name: "Wool Scarf", price: 48, emoji: "🧣" },
-      { id: 8, name: "Aviator Shades", price: 85, emoji: "🕶️" }
+      { id: 1, name: "Heavyweight Hoodie", price: 120, img: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=400" },
+      { id: 2, name: "Oversized Tee", price: 65, img: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400" },
+      { id: 3, name: "Tactical Cargo Pants", price: 140, img: "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400" },
+      { id: 4, name: "Obsidian Cap", price: 45, img: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400" }
     ];
 
-    // Product art drawn in code, so nothing has to load from the internet
-    const D = '#3a2515', L = '#fff6e8';
-    const svg = (inner) => `<svg viewBox="0 0 100 100" aria-hidden="true">${inner}</svg>`;
-    const icons = {
-      1: svg(`<path d="M30 28 L42 20 Q50 32 58 20 L70 28 L88 54 L77 60 L70 49 L70 84 L30 84 L30 49 L23 60 L12 54 Z" fill="${D}"/><path d="M42 20 Q50 32 58 20" fill="none" stroke="${L}" stroke-width="2"/><path d="M38 64 H62 V76 H38 Z" fill="none" stroke="${L}" stroke-width="2"/>`),
-      2: svg(`<path d="M32 22 Q50 36 68 22 L90 38 L79 52 L70 45 L70 82 L30 82 L30 45 L21 52 L10 38 Z" fill="${D}"/><path d="M32 22 Q50 36 68 22" fill="none" stroke="${L}" stroke-width="2"/>`),
-      3: svg(`<path d="M31 14 H69 L74 88 H54 L50 46 L46 88 H26 Z" fill="${D}"/><path d="M31 22 H69" stroke="${L}" stroke-width="2"/><path d="M36 54 H44 V66 H36 Z M56 54 H64 V66 H56 Z" fill="none" stroke="${L}" stroke-width="2"/>`),
-      4: svg(`<path d="M18 62 Q20 30 50 28 Q80 30 82 62 Z" fill="${D}"/><path d="M62 62 Q94 58 96 70 Q80 72 58 68 Z" fill="${D}"/><path d="M50 28 V62" stroke="${L}" stroke-width="2"/>`),
-      5: svg(`<path d="M24 38 H76 L81 88 H19 Z" fill="${D}"/><path d="M36 38 Q36 14 50 14 Q64 14 64 38" fill="none" stroke="${D}" stroke-width="5"/><path d="M34 58 H66" stroke="${L}" stroke-width="2"/>`),
-      6: svg(`<rect x="42" y="6" width="16" height="88" rx="6" fill="${D}"/><circle cx="50" cy="50" r="24" fill="${L}" stroke="${D}" stroke-width="5"/><path d="M50 50 V34 M50 50 L61 56" stroke="${D}" stroke-width="3" stroke-linecap="round"/>`),
-      7: svg(`<rect x="26" y="16" width="48" height="36" rx="14" fill="${D}"/><rect x="38" y="40" width="22" height="48" rx="4" fill="${D}"/><path d="M42 58 H56 M42 68 H56" stroke="${L}" stroke-width="2"/>`),
-      8: svg(`<ellipse cx="32" cy="54" rx="19" ry="14" fill="${D}"/><ellipse cx="68" cy="54" rx="19" ry="14" fill="${D}"/><path d="M50 50 Q50 44 51 50" stroke="${D}" stroke-width="4" fill="none"/><path d="M13 50 L6 40 M87 50 L94 40" stroke="${D}" stroke-width="4" stroke-linecap="round"/><path d="M24 48 Q30 44 36 48" stroke="${L}" stroke-width="2" fill="none"/>`)
-    };
-
     let cart = {};
-    let shownTotal = 0;
 
     function renderCatalog() {
       const catalogEl = document.getElementById('catalog');
-      catalogEl.innerHTML = products.map((p, i) => `
-        <div class="product-card glass" style="--i:${i}">
-          <div class="img-wrap">
-            ${p.tag ? `<span class="tag">${p.tag}</span>` : ''}
-            ${icons[p.id]}
-          </div>
+      catalogEl.innerHTML = products.map(p => `
+        <div class="product-card">
+          <img src="${p.img}" class="product-img" alt="${p.name}" />
           <div>
             <div class="product-title">${p.name}</div>
             <div class="product-price">$${p.price}</div>
           </div>
-          <button class="add-btn" id="add-${p.id}" onclick="addToCart(${p.id})">+ Add</button>
+          <button class="add-btn" onclick="addToCart(${p.id})">+ Add</button>
         </div>
       `).join('');
     }
 
-    function haptic() {
-      try { tg.HapticFeedback.impactOccurred('light'); } catch (e) {}
-    }
-
     function addToCart(id) {
       cart[id] = (cart[id] || 0) + 1;
-      haptic();
-      updateCartUI(true);
-
-      const btn = document.getElementById('add-' + id);
-      btn.textContent = 'Added ✓';
-      btn.classList.add('added');
-      clearTimeout(btn._t);
-      btn._t = setTimeout(() => {
-        btn.textContent = '+ Add';
-        btn.classList.remove('added');
-      }, 900);
+      updateCartUI();
     }
 
     function updateQuantity(id, delta) {
       if (!cart[id]) return;
       cart[id] += delta;
       if (cart[id] <= 0) delete cart[id];
-      haptic();
-      updateCartUI(true);
+      updateCartUI();
     }
 
-    function animateTotal(to) {
-      const el = document.getElementById('total-price');
-      const from = shownTotal;
-      shownTotal = to;
-      const start = performance.now();
-      const dur = 450;
-      el.classList.add('pop');
-      setTimeout(() => el.classList.remove('pop'), 250);
-
-      function step(now) {
-        const t = Math.min((now - start) / dur, 1);
-        const eased = 1 - Math.pow(1 - t, 3);
-        el.textContent = '$' + Math.round(from + (to - from) * eased);
-        if (t < 1) requestAnimationFrame(step);
-      }
-      requestAnimationFrame(step);
-    }
-
-    function updateCartUI(animate) {
+    function updateCartUI() {
       let count = 0;
       let total = 0;
       const itemsList = document.getElementById('cart-items-list');
@@ -460,8 +309,8 @@
         itemsList.innerHTML += `
           <div class="cart-item">
             <div>
-              <div style="font-weight: 600; font-size: 0.9rem;">${product.emoji} ${product.name}</div>
-              <div style="font-size: 0.8rem; color: var(--text-soft);">$${product.price} each</div>
+              <div style="font-weight: 600; font-size: 0.9rem;">${product.name}</div>
+              <div style="font-size: 0.8rem; color: var(--accent-muted);">$${product.price} each</div>
             </div>
             <div class="qty-controls">
               <button class="qty-btn" onclick="updateQuantity(${id}, -1)">-</button>
@@ -472,23 +321,13 @@
         `;
       });
 
-      if (count === 0) {
-        itemsList.innerHTML = '<div class="empty-cart">Your cart is empty</div>';
-      }
-
       document.getElementById('cart-count').innerText = count;
-      animateTotal(total);
-
-      if (animate) {
-        const btn = document.getElementById('cart-btn');
-        btn.classList.remove('bump');
-        void btn.offsetWidth;
-        btn.classList.add('bump');
-      }
+      document.getElementById('total-price').innerText = `$${total}`;
     }
 
     function toggleCart() {
-      document.getElementById('cart-modal').classList.toggle('open');
+      const modal = document.getElementById('cart-modal');
+      modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
     }
 
     function submitOrder() {
@@ -511,7 +350,6 @@
     }
 
     renderCatalog();
-    updateCartUI(false);
   </script>
 </body>
 </html>
